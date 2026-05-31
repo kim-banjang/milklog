@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MilkLog — 재원이 수유 기록 앱 / Ứng dụng ghi sữa Jae Won</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: 'Noto Serif KR', 'Be Vietnam Pro', sans-serif;
+  background: #fdf8fb;
+  color: #2a1820;
+  line-height: 1.8;
+  transition: opacity 0.2s;
+}
+body.vi { font-family: 'Be Vietnam Pro', 'Noto Serif KR', sans-serif; }
+
+/* ── Lang toggle ── */
+.lang-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  background: rgba(253,248,251,0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #f0d8e8;
+}
+.lang-toggle {
+  display: flex;
+  background: #f5eef3;
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+.lang-btn {
+  padding: 6px 16px;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: #c490a8;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+.lang-btn.active {
+  background: #FFB5C8;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255,181,200,0.4);
+}
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(160deg, #fff5f8 0%, #fce8f0 60%, #f9d8e8 100%);
+  padding: 100px 24px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at 70% 30%, rgba(255,181,200,0.3) 0%, transparent 60%);
+}
+.hero-badge {
+  display: inline-block;
+  background: #FFB5C8;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.hero h1 {
+  font-family: 'Noto Serif KR', 'Noto Serif', serif;
+  font-size: clamp(30px, 6vw, 60px);
+  font-weight: 700;
+  color: #1a0810;
+  line-height: 1.25;
+  margin-bottom: 20px;
+  position: relative;
+}
+.hero h1 span { color: #FFB5C8; }
+.hero-sub {
+  font-size: clamp(14px, 2vw, 17px);
+  color: #6b3550;
+  max-width: 500px;
+  margin: 0 auto 36px;
+  line-height: 1.9;
+  position: relative;
+}
+.hero-pills {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.hero-pill {
+  background: #fff;
+  border: 1.5px solid #f0c8d8;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #5a2030;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 10px rgba(180,80,120,0.08);
+}
+.hero-pill .dot { width:7px; height:7px; border-radius:50%; background:#FFB5C8; flex-shrink:0; }
+
+/* ── Section ── */
+.section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+.section + .section { border-top: 1px solid #f0d8e8; }
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #c47090;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+.section h2 {
+  font-family: 'Noto Serif KR', 'Noto Serif', serif;
+  font-size: clamp(20px, 3.5vw, 30px);
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 18px;
+  color: #1a0810;
+}
+.section p { font-size: 14px; color: #4a2030; line-height: 1.9; margin-bottom: 14px; }
+.accent { color: #FFB5C8; font-weight: 700; }
+
+/* ── Problem grid ── */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 28px;
+}
+@media (max-width: 480px) { .problem-grid { grid-template-columns: 1fr; } }
+.problem-card {
+  background: #fff;
+  border: 1.5px solid #f0d8e8;
+  border-radius: 16px;
+  padding: 20px;
+}
+.problem-card .icon { font-size: 26px; margin-bottom: 10px; }
+.problem-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #2a1020; }
+.problem-card p { font-size: 12px; color: #6b3550; line-height: 1.7; margin: 0; }
+
+/* ── Phone row ── */
+.phone-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+.phone-wrap { flex-shrink: 0; width: 180px; }
+@media (max-width: 480px) { .phone-wrap { width: 100%; max-width: 240px; margin: 0 auto; } }
+.phone {
+  width: 100%;
+  background: #fff;
+  border: 2px solid #e0d0d8;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+.phone-status { background:#fff5f8; padding:7px 14px; display:flex; justify-content:space-between; font-size:9px; color:#bbb; }
+.phone-body { padding:11px; font-size:9px; }
+.phone-tabbar { border-top:1px solid #f0e8ee; display:grid; grid-template-columns:repeat(3,1fr); padding:5px 0; }
+.phone-tab { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:6px; color:#aaa; }
+.phone-tab.on { color:#FFB5C8; font-weight:700; }
+.phone-tab-icon { font-size:13px; }
+.phone-caption { flex:1; min-width:200px; padding-top:8px; }
+.phone-caption h3 { font-family:'Noto Serif KR','Noto Serif',serif; font-size:16px; font-weight:700; margin-bottom:10px; color:#1a0810; }
+.phone-caption p { font-size:13px; color:#5a2030; line-height:1.8; margin-bottom:10px; }
+.tip { background:#fff5f8; border-left:3px solid #FFB5C8; padding:10px 14px; border-radius:0 8px 8px 0; font-size:12px; color:#7a3050; margin-top:12px; }
+
+/* ── Screens grid ── */
+.screens-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 32px;
+}
+@media (max-width: 560px) { .screens-grid { grid-template-columns: 1fr; max-width: 240px; margin: 32px auto 0; } }
+.screen-item { text-align:center; }
+.screen-phone { width:100%; background:#fff; border:1.5px solid #e0d0d8; border-radius:18px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,0.08); margin-bottom:8px; }
+.screen-phone-status { background:#fff5f8; padding:4px 8px; display:flex; justify-content:space-between; font-size:6px; color:#ccc; }
+.screen-phone-body { padding:7px; min-height:180px; font-size:7px; }
+.screen-phone-tabbar { border-top:1px solid #f0e8ee; display:grid; grid-template-columns:repeat(3,1fr); padding:3px 0; }
+.screen-phone-tab { display:flex; flex-direction:column; align-items:center; font-size:4.5px; color:#ccc; gap:1px; }
+.screen-phone-tab.on { color:#FFB5C8; font-weight:700; }
+.screen-phone-tab-icon { font-size:8px; }
+.screen-label { font-size:12px; font-weight:700; color:#2a1020; }
+.screen-desc { font-size:11px; color:#7a4050; margin-top:3px; line-height:1.5; }
+
+/* ── Flow ── */
+.flow-box { background:#fff; border:1.5px solid #f0d8e8; border-radius:18px; padding:24px; margin-top:20px; }
+.flow-box h3 { font-family:'Noto Serif KR','Noto Serif',serif; font-size:15px; font-weight:700; margin-bottom:4px; color:#1a0810; }
+.flow-box .subtitle { font-size:12px; color:#8a4060; margin-bottom:16px; }
+.flow-steps { display:flex; flex-direction:column; }
+.flow-step { display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px dashed #f0d8e8; }
+.flow-step:last-child { border-bottom:none; }
+.flow-num { width:26px; height:26px; border-radius:50%; background:#FFB5C8; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.flow-text strong { display:block; font-size:13px; font-weight:700; color:#1a0810; margin-bottom:2px; }
+.flow-text span { font-size:12px; color:#7a4050; }
+
+/* ── Wife box ── */
+.wife-box { background:linear-gradient(135deg,#fff5f8 0%,#fce8f0 100%); border:2px solid #f0c0d8; border-radius:18px; padding:28px; margin-top:28px; text-align:center; }
+.wife-box h3 { font-family:'Noto Serif KR','Noto Serif',serif; font-size:19px; font-weight:700; margin-bottom:14px; color:#1a0810; }
+.wife-benefits { display:flex; flex-direction:column; gap:12px; text-align:left; margin-top:18px; }
+.wife-benefit { display:flex; align-items:flex-start; gap:12px; background:#fff; border-radius:12px; padding:14px 16px; border:1px solid #f0d0e8; }
+.wife-benefit .wi { font-size:20px; flex-shrink:0; }
+.wife-benefit strong { display:block; font-size:13px; font-weight:700; margin-bottom:3px; color:#1a0810; }
+.wife-benefit span { font-size:12px; color:#6b3050; line-height:1.6; }
+
+/* ── CTA ── */
+.cta-section { text-align:center; padding:60px 24px; background:linear-gradient(160deg,#fff5f8 0%,#fce8f0 100%); }
+.cta-section h2 { font-family:'Noto Serif KR','Noto Serif',serif; font-size:clamp(22px,4vw,34px); font-weight:700; color:#1a0810; margin-bottom:16px; }
+.cta-section p { font-size:14px; color:#6b3550; margin-bottom:28px; line-height:1.9; }
+.cta-url {
+  display:inline-block;
+  background:#FFB5C8;
+  color:#fff;
+  font-size:clamp(14px,2vw,18px);
+  font-weight:700;
+  padding:14px 32px;
+  border-radius:30px;
+  text-decoration:none;
+  box-shadow:0 4px 20px rgba(255,181,200,0.4);
+  margin-bottom:16px;
+  word-break:break-all;
+}
+.install-tip { font-size:12px; color:#c490a8; line-height:1.8; }
+
+/* ── Footer ── */
+.footer { text-align:center; padding:40px 24px; background:#2a0818; color:#c490a8; font-size:12px; line-height:2; }
+.footer strong { color:#f0c0d8; font-size:16px; font-family:'Noto Serif KR','Noto Serif',serif; display:block; margin-bottom:6px; }
+
+/* ── Lang content ── */
+[data-ko], [data-vi] { }
+body.ko [data-vi] { display:none !important; }
+body.vi [data-ko] { display:none !important; }
+</style>
+</head>
+<body class="ko">
+
+<!-- Lang bar -->
+<div class="lang-bar">
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-ko" onclick="setLang('ko')">KO</button>
+    <button class="lang-btn" id="btn-vi" onclick="setLang('vi')">VI</button>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div data-ko><div class="hero-badge">🍼 아빠가 직접 만든 우리 아기 전용 앱</div></div>
+  <div data-vi><div class="hero-badge">🍼 Ứng dụng do ba tự làm cho Jae Won</div></div>
+
+  <h1 data-ko>재원이의 모든<br><span>수유 기록</span>을<br>함께 관리해요</h1>
+  <h1 data-vi>Ghi lại tất cả<br><span>lần bú sữa</span><br>của Jae Won</h1>
+
+  <p class="hero-sub" data-ko>언제, 얼마나 먹었는지 기록하고<br>다음 수유 시간을 미리 알려드려요.<br>아내도 베트남어로 편하게 쓸 수 있어요.</p>
+  <p class="hero-sub" data-vi>Ghi lại thời gian và lượng sữa mỗi lần bú,<br>nhắc nhở giờ bú tiếp theo.<br>Mẹ dùng được bằng tiếng Việt, rất dễ dàng.</p>
+
+  <div class="hero-pills">
+    <div class="hero-pill"><span class="dot"></span><span data-ko>수유량 간편 기록</span><span data-vi>Ghi nhanh lượng sữa</span></div>
+    <div class="hero-pill"><span class="dot"></span><span data-ko>다음 수유 알람</span><span data-vi>Báo giờ bú tiếp</span></div>
+    <div class="hero-pill"><span class="dot"></span><span data-ko>한국어 · 베트남어</span><span data-vi>Tiếng Việt · Tiếng Hàn</span></div>
+  </div>
+</div>
+
+<!-- ── WHY ── -->
+<div class="section">
+  <div class="section-label" data-ko>왜 만들었나요</div>
+  <div class="section-label" data-vi>Tại sao có ứng dụng này</div>
+
+  <h2 data-ko>신생아를 키우면서<br>이런 순간들이 있었어요</h2>
+  <h2 data-vi>Nuôi con sơ sinh,<br>mình gặp những tình huống này</h2>
+
+  <p data-ko>재원이가 태어나고 나서, 언제 수유했는지 기억이 잘 안 나거나 아내와 내가 각자 다른 시간에 수유해서 하루 총 수유량을 파악하기 어려운 경우가 생겼어요.</p>
+  <p data-vi>Sau khi Jae Won ra đời, có những lúc không nhớ lần bú gần nhất là khi nào, hoặc hai vợ chồng cho bú ở các giờ khác nhau nên không biết tổng lượng sữa trong ngày là bao nhiêu.</p>
+
+  <p data-ko>특히 새벽에 수유할 때 총 수유량과 마지막 수유 시간을 바로 확인하고 싶었어요. 그래서 <span class="accent">우리 가족만을 위한 앱</span>을 직접 만들기로 했어요.</p>
+  <p data-vi>Đặc biệt ban đêm, muốn biết ngay tổng lượng và giờ bú cuối. Vì vậy ba đã tự làm <span class="accent">ứng dụng riêng cho gia đình mình</span>.</p>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="icon">🕐</div>
+      <h3 data-ko>마지막 수유가 언제였더라?</h3>
+      <h3 data-vi>Lần bú gần nhất là lúc nào?</h3>
+      <p data-ko>새벽에 일어나면 마지막 수유 시간이 기억이 안 나요.</p>
+      <p data-vi>Thức dậy ban đêm không nhớ giờ bú cuối. Ghi vào sổ thì bất tiện.</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">📊</div>
+      <h3 data-ko>오늘 총 얼마나 먹었지?</h3>
+      <h3 data-vi>Hôm nay bé bú được bao nhiêu?</h3>
+      <p data-ko>소아과에서 하루 수유량을 물어보는데 바로 대답하기 어려워요.</p>
+      <p data-vi>Bác sĩ nhi hỏi tổng lượng sữa trong ngày mà không có số liệu chính xác.</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">👫</div>
+      <h3 data-ko>아내와 기록 공유가 어려워요</h3>
+      <h3 data-vi>Chia sẻ ghi chép với mẹ</h3>
+      <p data-ko>아내는 베트남어가 편한데, 한국어 앱은 같이 쓰기 불편해요.</p>
+      <p data-vi>Mẹ quen dùng tiếng Việt hơn, mà các ứng dụng toàn tiếng Hàn nên khó dùng chung.</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">⏰</div>
+      <h3 data-ko>다음 수유 타이밍을 놓침</h3>
+      <h3 data-vi>Bỏ lỡ giờ bú</h3>
+      <p data-ko>바쁘게 지내다 보면 수유 시간이 지나는 경우가 생겨요.</p>
+      <p data-vi>Bận rộn là quên mất đã đến giờ bú. Nếu có chuông nhắc thì tiện hơn nhiều.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOME SCREEN ── -->
+<div class="section">
+  <div class="section-label" data-ko>홈 화면</div>
+  <div class="section-label" data-vi>Màn hình chính</div>
+  <h2 data-ko>앱을 열면 바로 수유를 기록해요</h2>
+  <h2 data-vi>Mở app lên là ghi sữa ngay</h2>
+
+  <div class="phone-row">
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+        <div class="phone-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+            <div>
+              <div style="font-weight:700;font-size:11px;color:#1a0810;">MilkLog</div>
+              <div style="font-size:6px;color:#aaa;" data-ko>재원이 · 생후 7개월</div>
+              <div style="font-size:6px;color:#aaa;" data-vi>Jae Won · 7 tháng tuổi</div>
+            </div>
+            <div style="background:#e8f8f0;border-radius:9px;padding:4px 7px;text-align:center;">
+              <div style="font-weight:700;font-size:10px;color:#5AAE85;">480ml</div>
+              <div style="font-size:5px;color:#aaa;" data-ko>오늘 총량</div>
+              <div style="font-size:5px;color:#aaa;" data-vi>Hôm nay</div>
+            </div>
+          </div>
+          <div style="font-size:6px;font-weight:700;color:#555;margin-bottom:2px;" data-ko>준 양</div>
+          <div style="font-size:6px;font-weight:700;color:#555;margin-bottom:2px;" data-vi>Lượng cho</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:5px;">
+            <div style="width:18px;height:18px;background:#f5f5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;">−</div>
+            <div style="font-weight:700;font-size:20px;color:#FFB5C8;">120<span style="font-size:8px;font-weight:400;color:#aaa;">ml</span></div>
+            <div style="width:18px;height:18px;background:#f5f5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;">+</div>
+          </div>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px;">
+            <div style="padding:2px 5px;border-radius:9px;border:1px solid #ddd;font-size:5.5px;color:#aaa;">60</div>
+            <div style="padding:2px 5px;border-radius:9px;border:1px solid #ddd;font-size:5.5px;color:#aaa;">80</div>
+            <div style="padding:2px 5px;border-radius:9px;background:#FFB5C8;border:1px solid #FFB5C8;font-size:5.5px;color:#fff;font-weight:700;">120</div>
+            <div style="padding:2px 5px;border-radius:9px;border:1px solid #ddd;font-size:5.5px;color:#aaa;">150</div>
+            <div style="padding:2px 5px;border-radius:9px;border:1px solid #ddd;font-size:5.5px;color:#aaa;">180</div>
+          </div>
+          <div style="background:#f0fbf5;border-radius:7px;padding:5px 7px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:5.5px;color:#5AAE85;font-weight:700;" data-ko>실수유량</div>
+            <div style="font-size:5.5px;color:#5AAE85;font-weight:700;" data-vi>Lượng thực uống</div>
+            <div style="font-weight:700;font-size:13px;color:#5AAE85;">120<span style="font-size:6px;font-weight:400;">ml</span></div>
+          </div>
+          <div style="background:#FFB5C8;border-radius:7px;padding:7px;text-align:center;color:#fff;font-weight:700;font-size:7px;margin-bottom:7px;">
+            <span data-ko>🍼 지금 수유 기록하기</span>
+            <span data-vi>🍼 Ghi nhận ngay</span>
+          </div>
+          <div style="background:#f0f4ff;border-radius:7px;padding:5px 7px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:5.5px;color:#5A8BE8;font-weight:700;" data-ko>다음 수유 알람</div>
+            <div style="font-size:5.5px;color:#5A8BE8;font-weight:700;" data-vi>Báo giờ bú tiếp</div>
+            <div style="font-weight:700;font-size:9px;color:#5A8BE8;">2h 45m</div>
+          </div>
+        </div>
+        <div class="phone-tabbar">
+          <div class="phone-tab on"><div class="phone-tab-icon">🏠</div><span data-ko>홈</span><span data-vi>Trang chủ</span></div>
+          <div class="phone-tab"><div class="phone-tab-icon">📋</div><span data-ko>수유기록</span><span data-vi>Lịch sử</span></div>
+          <div class="phone-tab"><div class="phone-tab-icon">👤</div><span data-ko>마이</span><span data-vi>Của tôi</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-caption">
+      <h3 data-ko>수유량, 한 번 탭으로 기록</h3>
+      <h3 data-vi>Ghi lượng sữa chỉ với một cái chạm</h3>
+      <p data-ko>프리셋 버튼으로 빠르게 선택하거나 + / − 로 10ml 단위로 조절해요. <span class="accent">준 양에서 남긴 양을 빼서 실수유량</span>을 자동으로 계산해줘요.</p>
+      <p data-vi>Chọn nhanh qua nút preset hoặc điều chỉnh từng 10ml bằng + / −. <span class="accent">Lượng thực uống = Lượng cho − Lượng còn lại</span>, tự động tính ngay.</p>
+      <p data-ko>기록 버튼을 누르면 자동으로 다음 수유 알람이 설정돼요. 새벽에도 빠르게 기록하고 다시 잘 수 있어요.</p>
+      <p data-vi>Nhấn nút ghi là xong, chuông báo lần bú tiếp cũng tự đặt luôn. Ban đêm ghi xong là ngủ tiếp được ngay.</p>
+      <div class="tip" data-ko>헤더의 오늘 총량은 실시간으로 업데이트돼요. 소아과 방문 시 바로 확인할 수 있어요.</div>
+      <div class="tip" data-vi>Tổng lượng hôm nay cập nhật theo thời gian thực. Tiện khi đi khám bác sĩ nhi.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREENS ── -->
+<div class="section">
+  <div class="section-label" data-ko>주요 화면들</div>
+  <div class="section-label" data-vi>Các màn hình chính</div>
+  <h2 data-ko>3개의 탭으로 구성돼 있어요</h2>
+  <h2 data-vi>Ứng dụng gồm 3 tab này</h2>
+
+  <div class="screens-grid">
+    <!-- 리스트 뷰 -->
+    <div class="screen-item">
+      <div class="screen-phone">
+        <div class="screen-phone-status"><span>9:41</span><span>●●●</span></div>
+        <div class="screen-phone-body">
+          <div style="font-weight:700;font-size:8px;margin-bottom:5px;"><span data-ko>수유기록</span><span data-vi>Lịch sử</span></div>
+          <div style="display:flex;gap:3px;margin-bottom:5px;">
+            <div style="background:#FFB5C8;color:#fff;padding:1.5px 6px;border-radius:7px;font-size:5.5px;font-weight:700;" data-ko>리스트</div>
+            <div style="background:#FFB5C8;color:#fff;padding:1.5px 6px;border-radius:7px;font-size:5.5px;font-weight:700;" data-vi>Danh sách</div>
+            <div style="background:#f5f5f5;color:#aaa;padding:1.5px 6px;border-radius:7px;font-size:5.5px;" data-ko>달력</div>
+            <div style="background:#f5f5f5;color:#aaa;padding:1.5px 6px;border-radius:7px;font-size:5.5px;" data-vi>Lịch</div>
+          </div>
+          <div style="font-size:5px;color:#aaa;font-weight:700;margin-bottom:2px;" data-ko>오늘 · 4회</div>
+          <div style="font-size:5px;color:#aaa;font-weight:700;margin-bottom:2px;" data-vi>Hôm nay · 4 lần</div>
+          <div style="background:#fff8fa;border-radius:5px;padding:3px 5px;margin-bottom:2px;display:flex;justify-content:space-between;">
+            <div><div style="font-size:6px;font-weight:600;">14:30</div><div style="font-size:4.5px;color:#aaa;" data-ko>23분 전</div><div style="font-size:4.5px;color:#aaa;" data-vi>23 phút trước</div></div>
+            <div style="font-weight:700;font-size:8px;color:#5AAE85;">120<span style="font-size:4.5px;font-weight:400;color:#aaa;">ml</span></div>
+          </div>
+          <div style="background:#fff;border-radius:5px;padding:3px 5px;margin-bottom:2px;display:flex;justify-content:space-between;border:1px solid #f0e8ee;">
+            <div><div style="font-size:6px;font-weight:600;">11:15</div><div style="font-size:4.5px;color:#aaa;" data-ko>3시간 전</div><div style="font-size:4.5px;color:#aaa;" data-vi>3 tiếng trước</div></div>
+            <div style="font-weight:700;font-size:8px;color:#5AAE85;">100<span style="font-size:4.5px;font-weight:400;color:#aaa;">ml</span></div>
+          </div>
+          <div style="font-size:5px;color:#aaa;font-weight:700;margin:4px 0 2px;" data-ko>어제</div>
+          <div style="font-size:5px;color:#aaa;font-weight:700;margin:4px 0 2px;" data-vi>Hôm qua</div>
+          <div style="background:#fff;border-radius:5px;padding:3px 5px;display:flex;justify-content:space-between;border:1px solid #f0e8ee;">
+            <div style="font-size:6px;font-weight:600;" data-ko>5월 30일 (금)</div>
+            <div style="font-size:6px;font-weight:600;" data-vi>30/5 (Thứ 6)</div>
+            <div style="font-size:5.5px;color:#5AAE85;font-weight:700;" data-ko>5회 · 580ml</div>
+            <div style="font-size:5.5px;color:#5AAE85;font-weight:700;" data-vi>5 lần · 580ml</div>
+          </div>
+        </div>
+        <div class="screen-phone-tabbar">
+          <div class="screen-phone-tab"><div class="screen-phone-tab-icon">🏠</div></div>
+          <div class="screen-phone-tab on"><div class="screen-phone-tab-icon">📋</div></div>
+          <div class="screen-phone-tab"><div class="screen-phone-tab-icon">👤</div></div>
+        </div>
+      </div>
+      <div class="screen-label" data-ko>수유 기록 리스트</div>
+      <div class="screen-label" data-vi>Danh sách lịch sử</div>
+      <div class="screen-desc" data-ko>오늘 기록과 이전 날짜별 수유 내역을 확인해요.</div>
+      <div class="screen-desc" data-vi>Xem lịch sử bú hôm nay và các ngày trước.</div>
+    </div>
+
+    <!-- 달력 뷰 -->
+    <div class="screen-item">
+      <div class="screen-phone">
+        <div class="screen-phone-status"><span>9:41</span><span>●●●</span></div>
+        <div class="screen-phone-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <div style="font-size:6px;">‹</div>
+            <div style="font-weight:700;font-size:7px;" data-ko>2026년 5월</div>
+            <div style="font-weight:700;font-size:7px;" data-vi>Tháng 5 / 2026</div>
+            <div style="font-size:6px;">›</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:4.5px;color:#aaa;text-align:center;margin-bottom:2px;">
+            <div data-ko>일</div><div data-ko>월</div><div data-ko>화</div><div data-ko>수</div><div data-ko>목</div><div data-ko>금</div><div data-ko>토</div>
+            <div data-vi>CN</div><div data-vi>T2</div><div data-vi>T3</div><div data-vi>T4</div><div data-vi>T5</div><div data-vi>T6</div><div data-vi>T7</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:5px;">
+            <div></div><div></div><div></div>
+            <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4.5px;"><div>1</div></div>
+            <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4.5px;background:#ffe0ec;border-radius:2px;"><div>2</div><div style="width:7px;height:2px;background:#FFB5C8;border-radius:1px;margin-top:1px;"></div></div>
+            <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4.5px;background:#ffe0ec;border-radius:2px;"><div>3</div><div style="width:9px;height:2.5px;background:#FFB5C8;border-radius:1px;margin-top:1px;"></div></div>
+            <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4.5px;"><div>4</div></div>
+            <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4.5px;background:#ffe0ec;border-radius:2px;"><div>5</div><div style="width:8px;height:2px;background:#FFB5C8;border-radius:1px;margin-top:1px;"></div></div>
+            <div style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4.5px;background:#FFB5C8;border-radius:2px;color:#fff;font-weight:700;"><div>31</div></div>
+          </div>
+          <div style="background:#fff;border:1px solid #f0d8e8;border-radius:5px;padding:4px 5px;font-size:5.5px;">
+            <div style="font-weight:700;margin-bottom:1px;" data-ko>5월 31일 (오늘)</div>
+            <div style="font-weight:700;margin-bottom:1px;" data-vi>31/5 (Hôm nay)</div>
+            <div style="color:#5AAE85;font-weight:600;" data-ko>4회 · 480ml</div>
+            <div style="color:#5AAE85;font-weight:600;" data-vi>4 lần · 480ml</div>
+          </div>
+        </div>
+        <div class="screen-phone-tabbar">
+          <div class="screen-phone-tab"><div class="screen-phone-tab-icon">🏠</div></div>
+          <div class="screen-phone-tab on"><div class="screen-phone-tab-icon">📋</div></div>
+          <div class="screen-phone-tab"><div class="screen-phone-tab-icon">👤</div></div>
+        </div>
+      </div>
+      <div class="screen-label" data-ko>달력 뷰</div>
+      <div class="screen-label" data-vi>Xem lịch</div>
+      <div class="screen-desc" data-ko>날짜별 수유량을 달력으로 확인해요.</div>
+      <div class="screen-desc" data-vi>Xem lượng sữa theo ngày trên lịch tháng.</div>
+    </div>
+
+    <!-- 마이 탭 -->
+    <div class="screen-item">
+      <div class="screen-phone">
+        <div class="screen-phone-status"><span>9:41</span><span>●●●</span></div>
+        <div class="screen-phone-body">
+          <div style="text-align:center;padding:6px 0 5px;">
+            <div style="width:32px;height:32px;background:#ffe0ec;border-radius:50%;margin:0 auto 3px;display:flex;align-items:center;justify-content:center;font-size:16px;">👶</div>
+            <div style="font-weight:700;font-size:8px;">Jae Won · 김재원</div>
+            <div style="font-size:5px;color:#aaa;margin-top:1px;" data-ko>2025-10-25 · 생후 7개월</div>
+            <div style="font-size:5px;color:#aaa;margin-top:1px;" data-vi>25/10/2025 · 7 tháng tuổi</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin-bottom:5px;">
+            <div style="background:#f5f5f5;border-radius:5px;padding:4px;text-align:center;">
+              <div style="font-weight:700;font-size:10px;color:#FFB5C8;">4</div>
+              <div style="font-size:4.5px;color:#aaa;" data-ko>오늘 횟수</div>
+              <div style="font-size:4.5px;color:#aaa;" data-vi>Lần hôm nay</div>
+            </div>
+            <div style="background:#f5f5f5;border-radius:5px;padding:4px;text-align:center;">
+              <div style="font-weight:700;font-size:10px;color:#FFB5C8;">480<span style="font-size:5px;">ml</span></div>
+              <div style="font-size:4.5px;color:#aaa;" data-ko>오늘 총량</div>
+              <div style="font-size:4.5px;color:#aaa;" data-vi>Tổng hôm nay</div>
+            </div>
+            <div style="background:#f5f5f5;border-radius:5px;padding:4px;text-align:center;">
+              <div style="font-weight:700;font-size:10px;color:#FFB5C8;">169</div>
+              <div style="font-size:4.5px;color:#aaa;" data-ko>전체 기록</div>
+              <div style="font-size:4.5px;color:#aaa;" data-vi>Tổng cộng</div>
+            </div>
+          </div>
+          <div style="background:#f0fbf5;border-radius:5px;padding:5px 6px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:5px;color:#5AAE85;" data-ko>최근 일평균 수유량</div>
+            <div style="font-size:5px;color:#5AAE85;" data-vi>Trung bình mỗi ngày</div>
+            <div style="font-weight:700;font-size:11px;color:#5AAE85;">656<span style="font-size:5px;font-weight:400;">ml</span></div>
+          </div>
+        </div>
+        <div class="screen-phone-tabbar">
+          <div class="screen-phone-tab"><div class="screen-phone-tab-icon">🏠</div></div>
+          <div class="screen-phone-tab"><div class="screen-phone-tab-icon">📋</div></div>
+          <div class="screen-phone-tab on"><div class="screen-phone-tab-icon">👤</div></div>
+        </div>
+      </div>
+      <div class="screen-label" data-ko>마이 탭</div>
+      <div class="screen-label" data-vi>Tab Của tôi</div>
+      <div class="screen-desc" data-ko>프로필과 수유 통계를 한눈에 봐요.</div>
+      <div class="screen-desc" data-vi>Hồ sơ Jae Won và thống kê bú sữa.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOW TO USE ── -->
+<div class="section">
+  <div class="section-label" data-ko>이렇게 쓰면 돼요</div>
+  <div class="section-label" data-vi>Cách dùng</div>
+  <h2 data-ko>하루에 이런 흐름으로 써요</h2>
+  <h2 data-vi>Mỗi ngày dùng theo quy trình này</h2>
+
+  <div class="flow-box">
+    <h3 data-ko>수유할 때마다</h3>
+    <h3 data-vi>Mỗi lần cho bú</h3>
+    <p class="subtitle" data-ko>가장 자주 쓰는 흐름이에요</p>
+    <p class="subtitle" data-vi>Quy trình dùng thường xuyên nhất</p>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text">
+          <strong data-ko>앱 열기 → 준 양 선택</strong>
+          <strong data-vi>Mở app → Chọn lượng cho</strong>
+          <span data-ko>프리셋 버튼으로 빠르게, 또는 + / − 로 조절해요.</span>
+          <span data-vi>Chọn nhanh qua nút preset, hoặc điều chỉnh bằng + / −.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text">
+          <strong data-ko>남긴 양 입력 (선택)</strong>
+          <strong data-vi>Nhập lượng còn lại (nếu có)</strong>
+          <span data-ko>다 먹었으면 패스. 남겼으면 입력하면 실수유량이 자동 계산돼요.</span>
+          <span data-vi>Bé uống hết thì bỏ qua. Nếu còn thì nhập vào, lượng thực uống tự tính.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text">
+          <strong data-ko>"지금 수유 기록하기" 탭</strong>
+          <strong data-vi>Nhấn "Ghi nhận ngay"</strong>
+          <span data-ko>기록 완료. 다음 수유 알람도 자동으로 설정돼요.</span>
+          <span data-vi>Ghi xong. Chuông báo lần bú tiếp cũng tự đặt luôn.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOR WIFE ── -->
+<div class="section">
+  <div class="section-label" data-ko>아내에게 좋은 점</div>
+  <div class="section-label" data-vi>Dành cho mẹ</div>
+  <h2 data-ko>같이 쓰면 더 좋아요</h2>
+  <h2 data-vi>Dùng chung thì tiện hơn nhiều</h2>
+
+  <div class="wife-box">
+    <h3 data-ko>베트남어로 편하게<br>수유 기록을 남겨요</h3>
+    <h3 data-vi>Ghi sữa bằng tiếng Việt<br>thoải mái và dễ dàng</h3>
+    <p style="font-size:13px;color:#7a4050;margin-top:8px;" data-ko>앱 상단 VI 버튼 하나로 베트남어 메인으로 전환돼요.</p>
+    <p style="font-size:13px;color:#7a4050;margin-top:8px;" data-vi>Nhấn nút VI ở góc trên, toàn bộ app chuyển sang tiếng Việt là chính.</p>
+    <div class="wife-benefits">
+      <div class="wife-benefit">
+        <div class="wi">🌏</div>
+        <div>
+          <strong data-ko>베트남어 메인으로 설정 가능</strong>
+          <strong data-vi>Đặt tiếng Việt làm ngôn ngữ chính</strong>
+          <span data-ko>VI 버튼 탭 하나로 베트남어가 주 언어로 바뀌어요.</span>
+          <span data-vi>Chỉ cần nhấn nút VI là xong. Không cần biết tiếng Hàn vẫn dùng được thoải mái.</span>
+        </div>
+      </div>
+      <div class="wife-benefit">
+        <div class="wi">📱</div>
+        <div>
+          <strong data-ko>폰 홈화면에 앱처럼 설치</strong>
+          <strong data-vi>Cài vào màn hình điện thoại như app</strong>
+          <span data-ko>Safari에서 "홈 화면에 추가"하면 앱 아이콘이 생겨요.</span>
+          <span data-vi>Trên Safari, nhấn "Thêm vào màn hình chính" là có icon app.</span>
+        </div>
+      </div>
+      <div class="wife-benefit">
+        <div class="wi">🔔</div>
+        <div>
+          <strong data-ko>수유 시간 알람</strong>
+          <strong data-vi>Chuông báo giờ bú</strong>
+          <span data-ko>수유 후 설정해둔 시간이 지나면 알림이 와요.</span>
+          <span data-vi>Sau khi ghi xong, đặt giờ báo lần bú tiếp. Bận mấy cũng không bỏ lỡ.</span>
+        </div>
+      </div>
+      <div class="wife-benefit">
+        <div class="wi">✏️</div>
+        <div>
+          <strong data-ko>기록 수정도 간편해요</strong>
+          <strong data-vi>Sửa ghi chép dễ dàng</strong>
+          <span data-ko>잘못 입력했을 때 기록을 탭하면 바로 수정할 수 있어요.</span>
+          <span data-vi>Nhập nhầm thì nhấn vào dòng đó là sửa được ngay. Xóa cũng được.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA ── -->
+<div class="cta-section">
+  <h2 data-ko>지금 바로 써보세요</h2>
+  <h2 data-vi>Dùng thử ngay bây giờ</h2>
+  <p data-ko>설치 없이 Safari에서 바로 접속하거나,<br>홈 화면에 추가해서 앱처럼 사용하세요.</p>
+  <p data-vi>Không cần cài đặt, mở Safari là vào được ngay,<br>hoặc thêm vào màn hình chính để dùng như app.</p>
+  <a class="cta-url" href="https://milklog-umber.vercel.app" target="_blank">milklog-umber.vercel.app</a>
+  <div class="install-tip" data-ko>iPhone: Safari → 하단 공유 버튼 → 홈 화면에 추가</div>
+  <div class="install-tip" data-vi>iPhone: Safari → Nút chia sẻ phía dưới → Thêm vào màn hình chính</div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <strong>🍼 MilkLog</strong>
+  <span data-ko>재원이를 위해 아빠가 직접 만든 앱이에요.</span>
+  <span data-vi>Ứng dụng do ba tự làm dành riêng cho Jae Won.</span>
+</div>
+
+<script>
+function setLang(lang) {
+  document.body.className = lang;
+  document.getElementById('btn-ko').className = 'lang-btn' + (lang==='ko'?' active':'');
+  document.getElementById('btn-vi').className = 'lang-btn' + (lang==='vi'?' active':'');
+  localStorage.setItem('milklog-preview-lang', lang);
+}
+// 저장된 언어 복원
+const saved = localStorage.getItem('milklog-preview-lang');
+if (saved) setLang(saved);
+</script>
+</body>
+</html>
