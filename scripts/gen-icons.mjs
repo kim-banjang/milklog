@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generates PWA icons (solid peach #FF9E6D) as valid PNG files — no external deps.
+// Generates PWA icons (baby pink #FFB5C8) as valid PNG files — no external deps.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 
@@ -25,7 +25,7 @@ function pngChunk(type, data) {
 }
 
 function buildPng(size) {
-  const [r, g, b] = [0xff, 0x9e, 0x6d]; // #FF9E6D peach
+  const [r, g, b] = [0xff, 0xb5, 0xc8]; // #FFB5C8 baby pink
 
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(size, 0);

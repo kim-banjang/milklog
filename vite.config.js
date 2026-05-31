@@ -15,7 +15,7 @@ export default defineConfig({
         name: 'MilkLog',
         short_name: 'MilkLog',
         description: '아기 수유 기록 앱',
-        theme_color: '#FF9E6D',
+        theme_color: '#FFB5C8',
         background_color: '#F8FAFC',
         display: 'standalone',
         orientation: 'portrait',
