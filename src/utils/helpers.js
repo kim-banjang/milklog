@@ -54,7 +54,7 @@ export function ageString(birth, now) {
   return `생후 ${months}개월`;
 }
 
-export function intervalLabel(min) {
+export function intervalLabel(min, lang = 'ko') {
   const h = min / 60;
-  return `${h}시간`;
+  return lang === 'vi' ? `${h} giờ` : `${h}시간`;
 }

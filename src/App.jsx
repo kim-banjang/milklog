@@ -3,6 +3,7 @@ import { MilkStorage, seedData } from './utils/storage.js';
 import { dayKey, diffParts, ageString } from './utils/helpers.js';
 import { HomeIcon, NoteIcon, PersonIcon } from './components/icons.jsx';
 import { HomeTab, LogTab, MyTab } from './components/tabs.jsx';
+import { T, LangToggle } from './utils/lang.jsx';
 import './index.css';
 
 function scheduleSwAlarm(nextAt, nick) {
@@ -154,14 +155,19 @@ export default function App() {
           <div className="ml-brand">
             <div className="ml-logo">MilkLog</div>
             <div className="ml-sub">
-              {data.profile.nick} 수유 기록 · {ageString(data.profile.birth, now)}
-              <span className="vi">Ghi sữa Jae Won</span>
+              <T
+                ko={`${data.profile.nick} 수유 기록 · ${ageString(data.profile.birth, now)}`}
+                vi="Ghi sữa Jae Won"
+              />
             </div>
           </div>
-          <div className="ml-today-badge">
-            <span className="ml-badge-label">오늘</span>
-            <span className="ml-num ml-badge-num">{todayTotal}</span>
-            <span className="ml-badge-unit">ml</span>
+          <div className="ml-header-right">
+            <LangToggle />
+            <div className="ml-today-badge">
+              <span className="ml-badge-label">오늘</span>
+              <span className="ml-num ml-badge-num">{todayTotal}</span>
+              <span className="ml-badge-unit">ml</span>
+            </div>
           </div>
         </div>
       </header>
@@ -205,17 +211,16 @@ export default function App() {
 
       <nav className="ml-tabbar">
         {[
-          { id: 'home', label: '홈', vi: 'Trang chủ', Icon: HomeIcon },
-          { id: 'log', label: '수유기록', vi: 'Lịch sử', Icon: NoteIcon },
-          { id: 'my', label: '마이', vi: 'Của tôi', Icon: PersonIcon },
-        ].map(({ id, label, vi, Icon }) => (
+          { id: 'home', ko: '홈', vi: 'Trang chủ', Icon: HomeIcon },
+          { id: 'log', ko: '수유기록', vi: 'Lịch sử', Icon: NoteIcon },
+          { id: 'my', ko: '마이', vi: 'Của tôi', Icon: PersonIcon },
+        ].map(({ id, ko, vi, Icon }) => (
           <button key={id} type="button"
             className={`ml-tab${tab === id ? ' is-active' : ''}`}
             onClick={() => setTab(id)}>
             <Icon size={25} />
             <span className="ml-tab-label">
-              {label}
-              <span className="vi">{vi}</span>
+              <T ko={ko} vi={vi} />
             </span>
             <span className="ml-tab-dot" />
           </button>

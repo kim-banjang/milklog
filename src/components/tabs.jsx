@@ -1,5 +1,6 @@
 import { fmtTime, intervalLabel, fmtDateLong, ageString } from '../utils/helpers.js';
 import { MilkStorage } from '../utils/storage.js';
+import { T, useLang } from '../utils/lang.jsx';
 import { BellIcon, NoteIcon, CalendarIcon, ChevronDown, DropIcon } from './icons.jsx';
 import { AmountEditor } from './EditPanel.jsx';
 import { LogItem } from './LogItem.jsx';
@@ -22,17 +23,26 @@ function Pill({ active, accent, children, onClick }) {
 }
 
 function AlarmCard({ alarm, now, cd, onSetInterval, onToggleAlarm }) {
+  const { lang } = useLang();
   const overdue = cd.overdue;
+
+  // 시간 단위 — 숫자와 인라인이라 단순 전환
+  const uHr  = lang === 'vi' ? 'giờ'  : '시간';
+  const uMin = lang === 'vi' ? 'phút' : '분';
+  const uSec = lang === 'vi' ? 'giây' : '초';
+  const uPast = lang === 'vi' ? 'phút trễ' : '분 지남';
+
   return (
     <div className="ml-card ml-alarm-card">
       <div className="ml-alarm-head">
         <div className="ml-alarm-icon"><BellIcon size={20} /></div>
         <div className="ml-alarm-head-text">
           <div className="ml-card-title">
-            다음 수유 알람
-            <span className="vi">Báo giờ bú tiếp</span>
+            <T ko="다음 수유 알람" vi="Báo giờ bú tiếp" />
           </div>
-          <div className="ml-card-cap">마지막 수유 기준 간격</div>
+          <div className="ml-card-cap">
+            <T ko="마지막 수유 기준 간격" vi="Kể từ lần bú cuối" />
+          </div>
         </div>
       </div>
 
@@ -40,40 +50,47 @@ function AlarmCard({ alarm, now, cd, onSetInterval, onToggleAlarm }) {
         {ALARM_PRESETS.map((p) => (
           <Pill key={p} active={alarm.intervalMin === p} accent="blue"
             onClick={() => onSetInterval(p)}>
-            {intervalLabel(p)}
+            {intervalLabel(p, lang)}
           </Pill>
         ))}
       </div>
 
       {alarm.active ? (
         <div className={`ml-countdown${overdue ? ' is-overdue' : ''}`}>
-          <div className="ml-cd-label">{overdue ? '수유 시간이 지났어요' : '다음 수유까지'}</div>
+          <div className="ml-cd-label">
+            {overdue
+              ? <T ko="수유 시간이 지났어요" vi="Đã quá giờ bú" />
+              : <T ko="다음 수유까지" vi="Đến giờ bú tiếp theo" />}
+          </div>
           <div className="ml-cd-time">
             {overdue ? (
               <>
-                <span className="ml-num ml-cd-num">{cd.h}</span><span className="ml-cd-u">시간</span>
-                <span className="ml-num ml-cd-num">{cd.m}</span><span className="ml-cd-u">분 지남</span>
+                <span className="ml-num ml-cd-num">{cd.h}</span><span className="ml-cd-u">{uHr}</span>
+                <span className="ml-num ml-cd-num">{cd.m}</span><span className="ml-cd-u">{uPast}</span>
               </>
             ) : (
               <>
-                <span className="ml-num ml-cd-num">{cd.h}</span><span className="ml-cd-u">시간</span>
-                <span className="ml-num ml-cd-num">{cd.m}</span><span className="ml-cd-u">분</span>
-                <span className="ml-num ml-cd-num ml-cd-sec">{String(cd.s).padStart(2, '0')}</span><span className="ml-cd-u">초</span>
+                <span className="ml-num ml-cd-num">{cd.h}</span><span className="ml-cd-u">{uHr}</span>
+                <span className="ml-num ml-cd-num">{cd.m}</span><span className="ml-cd-u">{uMin}</span>
+                <span className="ml-num ml-cd-num ml-cd-sec">{String(cd.s).padStart(2, '0')}</span><span className="ml-cd-u">{uSec}</span>
               </>
             )}
           </div>
           <div className="ml-cd-foot">
-            <span className="ml-cd-at">예정 {fmtTime(alarm.nextAt)}</span>
+            <span className="ml-cd-at">
+              <T ko={`예정 ${fmtTime(alarm.nextAt)}`} vi={`Dự kiến ${fmtTime(alarm.nextAt)}`} />
+            </span>
             <button type="button" className="ml-cd-off" onClick={onToggleAlarm}>
-              알람 취소
-              <span className="vi">Hủy báo thức</span>
+              <T ko="알람 취소" vi="Hủy báo thức" />
             </button>
           </div>
         </div>
       ) : (
         <button type="button" className="ml-alarm-set" onClick={onToggleAlarm}>
-          {intervalLabel(alarm.intervalMin)} 간격으로 알람 켜기
-          <span className="vi">Bật báo thức {intervalLabel(alarm.intervalMin)} một lần</span>
+          <T
+            ko={`${intervalLabel(alarm.intervalMin, 'ko')} 간격으로 알람 켜기`}
+            vi={`Bật báo thức ${intervalLabel(alarm.intervalMin, 'vi')} một lần`}
+          />
         </button>
       )}
     </div>
@@ -85,16 +102,14 @@ export function HomeTab({ prepared, leftover, setPrepared, setLeftover, onRecord
     <div className="ml-tabpane">
       <div className="ml-card">
         <div className="ml-card-title">
-          수유량 입력
-          <span className="vi">Nhập lượng sữa</span>
+          <T ko="수유량 입력" vi="Nhập lượng sữa" />
         </div>
         <AmountEditor prepared={prepared} leftover={leftover}
           setPrepared={setPrepared} setLeftover={setLeftover} />
         <button type="button" className="ml-record-btn" onClick={onRecord}>
           <DropIcon size={20} />
           <span>
-            지금 수유 기록하기
-            <span className="vi">Ghi nhận ngay</span>
+            <T ko="지금 수유 기록하기" vi="Ghi nhận ngay" />
           </span>
         </button>
       </div>
@@ -116,12 +131,12 @@ export function LogTab({
         <button type="button"
           className={`ml-seg-btn${logView === 'list' ? ' is-active' : ''}`}
           onClick={() => setLogView('list')}>
-          <NoteIcon size={18} /> 리스트
+          <NoteIcon size={18} /> <T ko="리스트" vi="Danh sách" />
         </button>
         <button type="button"
           className={`ml-seg-btn${logView === 'calendar' ? ' is-active' : ''}`}
           onClick={() => setLogView('calendar')}>
-          <CalendarIcon size={18} /> 달력
+          <CalendarIcon size={18} /> <T ko="달력" vi="Lịch" />
         </button>
       </div>
 
@@ -130,15 +145,16 @@ export function LogTab({
           <div className="ml-card ml-day-card">
             <div className="ml-day-head">
               <span className="ml-day-title">
-                오늘 수유 기록
-                <span className="vi">Ghi chép hôm nay</span>
+                <T ko="오늘 수유 기록" vi="Ghi chép hôm nay" />
               </span>
               <span className="ml-day-meta">
                 {todayLogs.length}회 · <span className="ml-mint">{todayTotal}ml</span>
               </span>
             </div>
             {todayLogs.length === 0 ? (
-              <div className="ml-empty-sm">아직 기록이 없어요</div>
+              <div className="ml-empty-sm">
+                <T ko="아직 기록이 없어요" vi="Chưa có ghi chép nào" />
+              </div>
             ) : (
               <div className="ml-loglist">
                 {todayLogs.map((l) => (
@@ -153,7 +169,7 @@ export function LogTab({
 
           {prevKeys.length > 0 && (
             <div className="ml-section-label">
-              이전 기록 <span className="vi">Lịch sử</span>
+              <T ko="이전 기록" vi="Lịch sử" />
             </div>
           )}
 
@@ -201,8 +217,7 @@ function StatCell({ label, vi, value, unit, accent }) {
         {unit && <span className="ml-stat-unit">{unit}</span>}
       </div>
       <div className="ml-stat-label">
-        {label}
-        {vi && <span className="vi">{vi}</span>}
+        <T ko={label} vi={vi} />
       </div>
     </div>
   );
@@ -269,10 +284,11 @@ export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dail
       <div className="ml-card ml-avg-card">
         <div className="ml-avg-text">
           <div className="ml-card-title">
-            최근 일평균 수유량
-            <span className="vi">Trung bình mỗi ngày</span>
+            <T ko="최근 일평균 수유량" vi="Trung bình mỗi ngày" />
           </div>
-          <div className="ml-card-cap">하루 평균 실수유량</div>
+          <div className="ml-card-cap">
+            <T ko="하루 평균 실수유량" vi="Lượng bú trung bình mỗi ngày" />
+          </div>
         </div>
         <div className="ml-avg-value">
           <span className="ml-num">{dailyAvg}</span>
@@ -287,12 +303,10 @@ export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dail
         </div>
         <div className="ml-dev-btns">
           <button type="button" className="ml-dev-btn ml-dev-btn--blue" onClick={handleSampleData}>
-            샘플 데이터 불러오기
-            <span className="vi">Tải dữ liệu mẫu</span>
+            <T ko="샘플 데이터 불러오기" vi="Tải dữ liệu mẫu" />
           </button>
           <button type="button" className="ml-dev-btn ml-dev-btn--red" onClick={handleReset}>
-            전체 초기화
-            <span className="vi">Xóa tất cả</span>
+            <T ko="전체 초기화" vi="Xóa tất cả" />
           </button>
         </div>
       </div>

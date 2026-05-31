@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PlusIcon, MinusIcon } from './icons.jsx';
+import { T } from '../utils/lang.jsx';
 
 export const PREP_PRESETS = [60, 80, 100, 120, 150, 180, 200];
 export const LEFT_PRESETS = [0, 10, 20, 30, 40, 50];
@@ -59,11 +60,11 @@ export function AmountEditor({ prepared, leftover, setPrepared, setLeftover }) {
   return (
     <div className="ml-editor">
       <Section
-        label={<>준 양<span className="vi">Lượng cho</span></>}
+        label={<T ko="준 양" vi="Lượng cho" />}
         value={prepared} presets={PREP_PRESETS}
         onChange={(v) => setPrepared(Math.max(STEP, v))} accent="peach" />
       <Section
-        label={<>남긴 양<span className="vi">Lượng còn lại</span></>}
+        label={<T ko="남긴 양" vi="Lượng còn lại" />}
         value={leftover} presets={LEFT_PRESETS}
         onChange={(v) => setLeftover(Math.min(prepared, Math.max(0, v)))} accent="slate-mid" />
       <div className="ml-calc">
@@ -73,7 +74,7 @@ export function AmountEditor({ prepared, leftover, setPrepared, setLeftover }) {
         <div className="ml-calc-result">
           <span className="ml-num ml-calc-num">{amount}</span>
           <span className="ml-calc-unit">ml</span>
-          <span className="ml-calc-tag">실수유량<span className="vi">Lượng thực uống</span></span>
+          <span className="ml-calc-tag"><T ko="실수유량" vi="Lượng thực uống" /></span>
         </div>
       </div>
     </div>
@@ -89,11 +90,11 @@ export function EditPanel({ log, onSave, onCancel }) {
         setPrepared={setPrepared} setLeftover={setLeftover} />
       <div className="ml-edit-actions">
         <button type="button" className="ml-btn-ghost" onClick={onCancel}>
-          취소<span className="vi">Hủy</span>
+          <T ko="취소" vi="Hủy" />
         </button>
         <button type="button" className="ml-btn-primary"
           onClick={() => onSave({ ...log, prepared, leftover })}>
-          저장<span className="vi">Lưu</span>
+          <T ko="저장" vi="Lưu" />
         </button>
       </div>
     </div>

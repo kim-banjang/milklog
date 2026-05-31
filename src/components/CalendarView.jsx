@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { dayKey, fmtMonthTitle, fmtDateLong, fmtTime } from '../utils/helpers.js';
 import { ChevronLeftSm, ChevronRight } from './icons.jsx';
+import { T } from '../utils/lang.jsx';
 
 export function CalendarView({ logs, now, selectedKey, onSelectDay }) {
   const [cursor, setCursor] = useState(() => {
@@ -100,7 +101,7 @@ export function CalendarView({ logs, now, selectedKey, onSelectDay }) {
             </div>
           </div>
           {dayLogs.length === 0 ? (
-            <div className="ml-empty-sm">기록 없음</div>
+            <div className="ml-empty-sm"><T ko="기록 없음" vi="Không có ghi chép" /></div>
           ) : (
             <div className="ml-detail-list">
               {dayLogs.map((l) => (

@@ -78,6 +78,18 @@ html, body {
 }
 .ml-sub { font-size: 13px; color: var(--slate-mid); font-weight: 500; }
 
+.ml-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+.ml-lang-toggle {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--peach-tint); border: 1.5px solid var(--peach-soft);
+  border-radius: 999px; padding: 4px 10px;
+  font-size: 12px; font-weight: 700; color: var(--slate-mid);
+  cursor: pointer;
+}
+.ml-lang-toggle span.is-active { color: var(--peach); }
+.ml-lang-sep { color: var(--slate-light); font-weight: 400; }
+
 .ml-today-badge {
   display: flex; align-items: baseline; gap: 4px;
   background: var(--mint-tint);
