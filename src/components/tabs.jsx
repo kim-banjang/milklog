@@ -1,4 +1,5 @@
 import { fmtTime, intervalLabel, fmtDateLong, ageString } from '../utils/helpers.js';
+import { MilkStorage } from '../utils/storage.js';
 import { BellIcon, NoteIcon, CalendarIcon, ChevronDown, DropIcon } from './icons.jsx';
 import { AmountEditor } from './EditPanel.jsx';
 import { LogItem } from './LogItem.jsx';
@@ -207,7 +208,49 @@ function StatCell({ label, vi, value, unit, accent }) {
   );
 }
 
+function generateSampleData(profile) {
+  const now = new Date();
+  const logs = [];
+  let id = Date.now();
+  const prepared_choices = [100, 110, 120, 130, 140, 150, 160, 170, 180];
+  const leftover_choices = [0, 0, 0, 10, 10, 20, 30];
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  for (let d = 4; d >= 0; d--) {
+    const feeds = 4 + Math.floor(Math.random() * 2);
+    for (let f = 0; f < feeds; f++) {
+      const t = new Date(now);
+      t.setDate(now.getDate() - d);
+      t.setHours(6 + Math.round(f * (16 / feeds)), Math.floor(Math.random() * 50), 0, 0);
+      const prepared = pick(prepared_choices);
+      const leftover = Math.min(pick(leftover_choices), prepared);
+      logs.push({ id: id++, ts: t.toISOString(), prepared, leftover });
+    }
+  }
+
+  logs.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+  const nextAt = new Date(new Date(logs[0].ts).getTime() + 180 * 60000).toISOString();
+  return {
+    logs,
+    profile,
+    alarm: { intervalMin: 180, nextAt, active: true },
+    nextId: id,
+  };
+}
+
 export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dailyAvg }) {
+  const handleSampleData = () => {
+    MilkStorage.save(generateSampleData(profile));
+    window.location.reload();
+  };
+
+  const handleReset = () => {
+    if (window.confirm('모든 수유 기록을 삭제할까요?\nXóa tất cả dữ liệu?')) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="ml-tabpane">
       <div className="ml-card ml-profile">
@@ -235,6 +278,23 @@ export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dail
         <div className="ml-avg-value">
           <span className="ml-num">{dailyAvg}</span>
           <span className="ml-avg-unit">ml</span>
+        </div>
+      </div>
+
+      {/* ── 개발용 ── */}
+      <div className="ml-dev-section">
+        <div className="ml-dev-label">
+          개발용 <span className="vi" style={{ display: 'inline', marginLeft: 4 }}>Dành cho dev</span>
+        </div>
+        <div className="ml-dev-btns">
+          <button type="button" className="ml-dev-btn ml-dev-btn--blue" onClick={handleSampleData}>
+            샘플 데이터 불러오기
+            <span className="vi">Tải dữ liệu mẫu</span>
+          </button>
+          <button type="button" className="ml-dev-btn ml-dev-btn--red" onClick={handleReset}>
+            전체 초기화
+            <span className="vi">Xóa tất cả</span>
+          </button>
         </div>
       </div>
     </div>

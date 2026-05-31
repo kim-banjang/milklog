@@ -420,3 +420,41 @@ html, body {
   margin-left: 4px;
   font-size: 11px;
 }
+
+/* ── 개발용 버튼 ── */
+.ml-dev-section {
+  padding: 8px 4px 4px;
+}
+.ml-dev-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--slate-light);
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.ml-dev-btns {
+  display: flex;
+  gap: 10px;
+}
+.ml-dev-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: transform .1s, opacity .15s;
+}
+.ml-dev-btn:active { transform: scale(0.97); opacity: 0.82; }
+.ml-dev-btn--blue { background: var(--blue-tint); color: var(--blue); }
+.ml-dev-btn--blue .vi { color: rgba(123, 167, 232, 0.65); }
+.ml-dev-btn--red { background: #FFF0EE; color: #D96B6B; }
+.ml-dev-btn--red .vi { color: rgba(217, 107, 107, 0.65); }
