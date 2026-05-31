@@ -121,9 +121,10 @@ export function HomeTab({ prepared, leftover, setPrepared, setLeftover, onRecord
 
 export function LogTab({
   logView, setLogView, todayLogs, prevKeys, prevGroups, dayTotalsMap, amt,
-  now, openId, setOpenId, openDays, setOpenDays, onSave, onDelete,
+  now, openId, setOpenId, openDays, setOpenDays, onSave, onDelete, canEdit,
   logs, selectedKey, setSelectedKey,
 }) {
+  const editable = (l) => (canEdit ? canEdit(l) : true);
   const todayTotal = todayLogs.reduce((s, l) => s + amt(l), 0);
   return (
     <div className="ml-tabpane">
@@ -158,7 +159,7 @@ export function LogTab({
             ) : (
               <div className="ml-loglist">
                 {todayLogs.map((l) => (
-                  <LogItem key={l.id} log={l} now={now}
+                  <LogItem key={l.id} log={l} now={now} editable={editable(l)}
                     expanded={openId === l.id}
                     onToggle={() => setOpenId(openId === l.id ? null : l.id)}
                     onSave={onSave} onDelete={onDelete} />
@@ -190,7 +191,7 @@ export function LogTab({
                 {open && (
                   <div className="ml-loglist">
                     {grp.map((l) => (
-                      <LogItem key={l.id} log={l} now={now}
+                      <LogItem key={l.id} log={l} now={now} editable={editable(l)}
                         expanded={openId === l.id}
                         onToggle={() => setOpenId(openId === l.id ? null : l.id)}
                         onSave={onSave} onDelete={onDelete} />

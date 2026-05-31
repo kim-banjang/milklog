@@ -3,12 +3,13 @@ import { TrashIcon } from './icons.jsx';
 import { EditPanel } from './EditPanel.jsx';
 import { T, useLang } from '../utils/lang.jsx';
 
-export function LogItem({ log, now, expanded, onToggle, onSave, onDelete }) {
+export function LogItem({ log, now, expanded, onToggle, onSave, onDelete, editable = true }) {
   const { lang } = useLang();
   const amount = Math.max(0, log.prepared - log.leftover);
   return (
     <div className={`ml-logitem${expanded ? ' is-open' : ''}`}>
-      <div className="ml-log-row" onClick={onToggle} role="button" tabIndex={0}>
+      <div className="ml-log-row" onClick={editable ? onToggle : undefined}
+        role={editable ? 'button' : undefined} tabIndex={editable ? 0 : undefined}>
         <div className="ml-log-left">
           <div className="ml-log-time">{fmtTime(log.ts)}</div>
           <div className="ml-log-elapsed">{fmtElapsed(log.ts, now)}</div>
@@ -28,12 +29,14 @@ export function LogItem({ log, now, expanded, onToggle, onSave, onDelete }) {
                 <T ko="남김 없이 완료" vi="Uống hết" />
               </div>}
         </div>
-        <button type="button" className="ml-log-del" aria-label="삭제"
-          onClick={(e) => { e.stopPropagation(); onDelete(log.id); }}>
-          <TrashIcon size={17} />
-        </button>
+        {editable && (
+          <button type="button" className="ml-log-del" aria-label="삭제"
+            onClick={(e) => { e.stopPropagation(); onDelete(log.id); }}>
+            <TrashIcon size={17} />
+          </button>
+        )}
       </div>
-      {expanded && (
+      {editable && expanded && (
         <EditPanel log={log} onSave={onSave} onCancel={onToggle} />
       )}
     </div>
