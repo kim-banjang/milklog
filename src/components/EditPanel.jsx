@@ -58,9 +58,13 @@ export function AmountEditor({ prepared, leftover, setPrepared, setLeftover }) {
   const amount = Math.max(0, prepared - leftover);
   return (
     <div className="ml-editor">
-      <Section label="준 양" value={prepared} presets={PREP_PRESETS}
+      <Section
+        label={<>준 양<span className="vi">Lượng cho</span></>}
+        value={prepared} presets={PREP_PRESETS}
         onChange={(v) => setPrepared(Math.max(STEP, v))} accent="peach" />
-      <Section label="남긴 양" value={leftover} presets={LEFT_PRESETS}
+      <Section
+        label={<>남긴 양<span className="vi">Lượng còn lại</span></>}
+        value={leftover} presets={LEFT_PRESETS}
         onChange={(v) => setLeftover(Math.min(prepared, Math.max(0, v)))} accent="slate-mid" />
       <div className="ml-calc">
         <div className="ml-calc-formula">
@@ -69,7 +73,7 @@ export function AmountEditor({ prepared, leftover, setPrepared, setLeftover }) {
         <div className="ml-calc-result">
           <span className="ml-num ml-calc-num">{amount}</span>
           <span className="ml-calc-unit">ml</span>
-          <span className="ml-calc-tag">실수유량</span>
+          <span className="ml-calc-tag">실수유량<span className="vi">Lượng thực uống</span></span>
         </div>
       </div>
     </div>
@@ -84,10 +88,12 @@ export function EditPanel({ log, onSave, onCancel }) {
       <AmountEditor prepared={prepared} leftover={leftover}
         setPrepared={setPrepared} setLeftover={setLeftover} />
       <div className="ml-edit-actions">
-        <button type="button" className="ml-btn-ghost" onClick={onCancel}>취소</button>
+        <button type="button" className="ml-btn-ghost" onClick={onCancel}>
+          취소<span className="vi">Hủy</span>
+        </button>
         <button type="button" className="ml-btn-primary"
           onClick={() => onSave({ ...log, prepared, leftover })}>
-          저장
+          저장<span className="vi">Lưu</span>
         </button>
       </div>
     </div>

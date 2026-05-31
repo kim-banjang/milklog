@@ -153,7 +153,10 @@ export default function App() {
         <div className="ml-header-row">
           <div className="ml-brand">
             <div className="ml-logo">MilkLog</div>
-            <div className="ml-sub">{data.profile.nick} · {ageString(data.profile.birth, now)}</div>
+            <div className="ml-sub">
+              {data.profile.nick} 수유 기록 · {ageString(data.profile.birth, now)}
+              <span className="vi">Ghi sữa Jae Won</span>
+            </div>
           </div>
           <div className="ml-today-badge">
             <span className="ml-badge-label">오늘</span>
@@ -189,15 +192,18 @@ export default function App() {
 
       <nav className="ml-tabbar">
         {[
-          { id: 'home', label: '홈', Icon: HomeIcon },
-          { id: 'log', label: '수유기록', Icon: NoteIcon },
-          { id: 'my', label: '마이', Icon: PersonIcon },
-        ].map(({ id, label, Icon }) => (
+          { id: 'home', label: '홈', vi: 'Trang chủ', Icon: HomeIcon },
+          { id: 'log', label: '수유기록', vi: 'Lịch sử', Icon: NoteIcon },
+          { id: 'my', label: '마이', vi: 'Của tôi', Icon: PersonIcon },
+        ].map(({ id, label, vi, Icon }) => (
           <button key={id} type="button"
             className={`ml-tab${tab === id ? ' is-active' : ''}`}
             onClick={() => setTab(id)}>
             <Icon size={25} />
-            <span className="ml-tab-label">{label}</span>
+            <span className="ml-tab-label">
+              {label}
+              <span className="vi">{vi}</span>
+            </span>
             <span className="ml-tab-dot" />
           </button>
         ))}

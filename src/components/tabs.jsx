@@ -27,7 +27,10 @@ function AlarmCard({ alarm, now, cd, onSetInterval, onToggleAlarm }) {
       <div className="ml-alarm-head">
         <div className="ml-alarm-icon"><BellIcon size={20} /></div>
         <div className="ml-alarm-head-text">
-          <div className="ml-card-title">수유 알람</div>
+          <div className="ml-card-title">
+            다음 수유 알람
+            <span className="vi">Báo giờ bú tiếp</span>
+          </div>
           <div className="ml-card-cap">마지막 수유 기준 간격</div>
         </div>
       </div>
@@ -60,12 +63,16 @@ function AlarmCard({ alarm, now, cd, onSetInterval, onToggleAlarm }) {
           </div>
           <div className="ml-cd-foot">
             <span className="ml-cd-at">예정 {fmtTime(alarm.nextAt)}</span>
-            <button type="button" className="ml-cd-off" onClick={onToggleAlarm}>알람 끄기</button>
+            <button type="button" className="ml-cd-off" onClick={onToggleAlarm}>
+              알람 취소
+              <span className="vi">Hủy báo thức</span>
+            </button>
           </div>
         </div>
       ) : (
         <button type="button" className="ml-alarm-set" onClick={onToggleAlarm}>
           {intervalLabel(alarm.intervalMin)} 간격으로 알람 켜기
+          <span className="vi">Bật báo thức {intervalLabel(alarm.intervalMin)} một lần</span>
         </button>
       )}
     </div>
@@ -76,12 +83,18 @@ export function HomeTab({ prepared, leftover, setPrepared, setLeftover, onRecord
   return (
     <div className="ml-tabpane">
       <div className="ml-card">
-        <div className="ml-card-title">수유량 입력</div>
+        <div className="ml-card-title">
+          수유량 입력
+          <span className="vi">Nhập lượng sữa</span>
+        </div>
         <AmountEditor prepared={prepared} leftover={leftover}
           setPrepared={setPrepared} setLeftover={setLeftover} />
         <button type="button" className="ml-record-btn" onClick={onRecord}>
           <DropIcon size={20} />
-          지금 수유 기록하기
+          <span>
+            지금 수유 기록하기
+            <span className="vi">Ghi nhận ngay</span>
+          </span>
         </button>
       </div>
       <AlarmCard alarm={alarm} now={now} cd={cd}
@@ -115,7 +128,10 @@ export function LogTab({
         <div className="ml-list-wrap">
           <div className="ml-card ml-day-card">
             <div className="ml-day-head">
-              <span className="ml-day-title">오늘</span>
+              <span className="ml-day-title">
+                오늘 수유 기록
+                <span className="vi">Ghi chép hôm nay</span>
+              </span>
               <span className="ml-day-meta">
                 {todayLogs.length}회 · <span className="ml-mint">{todayTotal}ml</span>
               </span>
@@ -133,6 +149,12 @@ export function LogTab({
               </div>
             )}
           </div>
+
+          {prevKeys.length > 0 && (
+            <div className="ml-section-label">
+              이전 기록 <span className="vi">Lịch sử</span>
+            </div>
+          )}
 
           {prevKeys.map((k) => {
             const open = !!openDays[k];
@@ -170,14 +192,17 @@ export function LogTab({
   );
 }
 
-function StatCell({ label, value, unit, accent }) {
+function StatCell({ label, vi, value, unit, accent }) {
   return (
     <div className="ml-stat">
       <div className="ml-stat-value">
         <span className="ml-num" style={accent ? { color: `var(--${accent})` } : {}}>{value}</span>
         {unit && <span className="ml-stat-unit">{unit}</span>}
       </div>
-      <div className="ml-stat-label">{label}</div>
+      <div className="ml-stat-label">
+        {label}
+        {vi && <span className="vi">{vi}</span>}
+      </div>
     </div>
   );
 }
@@ -194,14 +219,17 @@ export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dail
       </div>
 
       <div className="ml-stat-grid">
-        <StatCell label="오늘 횟수" value={todayCount} unit="회" accent="peach" />
-        <StatCell label="오늘 총량" value={todayTotal} unit="ml" accent="mint" />
-        <StatCell label="전체 기록" value={totalRecords} unit="건" />
+        <StatCell label="오늘 횟수" vi="Số lần" value={todayCount} unit="회" accent="peach" />
+        <StatCell label="오늘 총량" vi="Tổng hôm nay" value={todayTotal} unit="ml" accent="mint" />
+        <StatCell label="전체 기록" vi="Tổng cộng" value={totalRecords} unit="건" />
       </div>
 
       <div className="ml-card ml-avg-card">
         <div className="ml-avg-text">
-          <div className="ml-card-title">최근 7일 일평균</div>
+          <div className="ml-card-title">
+            최근 일평균 수유량
+            <span className="vi">Trung bình mỗi ngày</span>
+          </div>
           <div className="ml-card-cap">하루 평균 실수유량</div>
         </div>
         <div className="ml-avg-value">
