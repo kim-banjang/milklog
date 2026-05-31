@@ -186,7 +186,20 @@ export default function App() {
         {tab === 'my' && (
           <MyTab profile={data.profile} now={now}
             todayCount={todayLogs.length} todayTotal={todayTotal}
-            totalRecords={data.logs.length} dailyAvg={dailyAvg} />
+            totalRecords={data.logs.length} dailyAvg={dailyAvg}
+            onReset={() => {
+              // clear 후 빈 상태를 바로 저장 — 재로드 시 seedData() 자동실행 방지
+              const empty = {
+                logs: [],
+                profile: data.profile,
+                alarm: { intervalMin: 180, nextAt: new Date().toISOString(), active: false },
+                nextId: 1,
+              };
+              localStorage.clear();
+              MilkStorage.save(empty);
+              window.location.reload();
+            }}
+          />
         )}
       </main>
 

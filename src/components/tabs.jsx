@@ -238,7 +238,7 @@ function generateSampleData(profile) {
   };
 }
 
-export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dailyAvg }) {
+export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dailyAvg, onReset }) {
   const handleSampleData = () => {
     MilkStorage.save(generateSampleData(profile));
     window.location.reload();
@@ -246,8 +246,7 @@ export function MyTab({ profile, now, todayCount, todayTotal, totalRecords, dail
 
   const handleReset = () => {
     if (window.confirm('모든 수유 기록을 삭제할까요?\nXóa tất cả dữ liệu?')) {
-      localStorage.clear();
-      window.location.reload();
+      onReset();
     }
   };
 
