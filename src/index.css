@@ -508,9 +508,9 @@ html, body {
 .ml-onb-logo { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .ml-onb-logo-icon {
   width: 76px; height: 76px; border-radius: 26px;
-  background: var(--peach-tint); color: var(--peach);
+  background: #FF6B8A;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 22px var(--peach-soft);
+  box-shadow: 0 8px 22px rgba(255, 107, 138, 0.35);
 }
 .ml-onb-logo-text {
   font-family: var(--font-num); font-weight: 900; font-size: 34px;
@@ -693,7 +693,6 @@ html, body {
   gap: 22px; background: #FF6B8A;
 }
 .ml-splash-bottle {
-  width: 150px; height: 150px;
   overflow: visible;
 }
 /* 젖병 전체 흔들기 — 기본 15° 기울인 상태에서 그 주위로 흔들고 15°로 정지 */

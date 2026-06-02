@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import { T, LangToggle } from '../utils/lang.jsx';
-import { DropIcon } from '../components/icons.jsx';
+import BottleMark from '../components/BottleMark.jsx';
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -25,7 +25,7 @@ export default function Login() {
       <div className="ml-onb-top"><LangToggle /></div>
       <div className="ml-onb ml-onb--center">
         <div className="ml-onb-logo">
-          <div className="ml-onb-logo-icon"><DropIcon size={34} /></div>
+          <div className="ml-onb-logo-icon"><BottleMark size={52} /></div>
           <div className="ml-onb-logo-text">MilkLog</div>
           <div className="ml-onb-logo-sub">
             <T ko="우리 아기 수유 기록을 가족과 함께" vi="Ghi sữa cùng cả nhà" />
