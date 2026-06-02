@@ -685,3 +685,35 @@ html, body {
   font-family: var(--font-body); font-size: 15px; font-weight: 700; cursor: pointer;
 }
 .ml-sheet-add:active { transform: scale(0.98); }
+
+/* ── Splash screen ─────────────────────────────────────────── */
+.ml-splash {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px; background: #FF6B8A;
+}
+.ml-splash-bottle {
+  width: 120px; height: 120px; border-radius: 26px;
+  transform-origin: center bottom;
+  animation: ml-splash-shake 0.6s ease-in-out 0.3s 2;
+}
+.ml-splash-title {
+  font-family: var(--font-num); font-weight: 900; font-size: 30px;
+  color: #fff; letter-spacing: -0.02em;
+  opacity: 0;
+  animation: ml-splash-fadein 0.4s ease-out 0.5s forwards;
+}
+@keyframes ml-splash-shake {
+  0%   { transform: rotate(0deg); }
+  14%  { transform: rotate(15deg); }
+  28%  { transform: rotate(-15deg); }
+  42%  { transform: rotate(10deg); }
+  57%  { transform: rotate(-10deg); }
+  71%  { transform: rotate(5deg); }
+  85%  { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes ml-splash-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

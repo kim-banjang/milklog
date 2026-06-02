@@ -12,6 +12,7 @@ import Login from './screens/Login.jsx';
 import Onboarding from './screens/Onboarding.jsx';
 import MyScreen from './screens/MyScreen.jsx';
 import BabySwitchSheet from './screens/BabySwitchSheet.jsx';
+import SplashScreen from './screens/SplashScreen.jsx';
 import './index.css';
 
 function scheduleSwAlarm(nextAt, nick) {
@@ -47,6 +48,13 @@ export default function App() {
   const [userDoc, setUserDoc] = useState(null);
   const [userReady, setUserReady] = useState(false);
   const [addingBaby, setAddingBaby] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+
+  // 앱 로드 시 스플래시 2.5초 표시 후 자동 전환
+  useEffect(() => {
+    const t = setTimeout(() => setShowSplash(false), 2500);
+    return () => clearTimeout(t);
+  }, []);
 
   // users/{uid} 구독
   useEffect(() => {
@@ -56,6 +64,7 @@ export default function App() {
     return unsub;
   }, [user]);
 
+  if (showSplash) return <SplashScreen />;
   if (!firebaseReady) return <ConfigNeeded />;
   if (loading) return <Loading />;
   if (!user) return <Login />;
